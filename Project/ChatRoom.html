@@ -120,8 +120,8 @@
                 vm3.myUserChar = "./Img/" + snapshot.val().User_Character + ".svg";
             })
 
-            //找出最新的100筆
-            db.ref("/Table_ChatLog/"+ cvRoomId).limitToLast(10).on('value',function(snapshot){
+            //找出最新的50筆
+            db.ref("/Table_ChatLog/"+ cvRoomId).limitToLast(50).on('value',function(snapshot){
                 vm.myAllChatLog = snapshot.val();
             })
 

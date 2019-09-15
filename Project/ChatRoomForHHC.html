@@ -52,7 +52,7 @@
                 methods:{
                     submitText:function(){
                         if(this.myInput!=""){
-                            db.ref("/DB01/Table_ChatLog/" + cvRoomId).push({
+                            db.ref("/DB01_HHC/Table_ChatLog/" + cvRoomId).push({
                                 UserId:cvUserId,
                                 UserName:vm3.myUserName,
                                 UserChar:vm3.myUserChar,
@@ -109,19 +109,19 @@
                 },
                 methods:{
                     backToHall:function(){
-                        window.location.href= "./Hall.html?id=" + cvUserId;
+                        window.location.href= "./HallForHHC.html?id=" + cvUserId;
                     }
                 }
             })
 
             //找User資料
-            db.ref("/DB01/Table_User/"+ cvUserId).once('value',function(snapshot){
+            db.ref("/DB01_HHC/Table_User/"+ cvUserId).once('value',function(snapshot){
                 vm3.myUserName = snapshot.val().User_Name;
                 vm3.myUserChar = "./Img/" + snapshot.val().User_Character + ".svg";
             })
 
             //找出最新的50筆
-            db.ref("/DB01/Table_ChatLog/"+ cvRoomId).limitToLast(50).on('value',function(snapshot){
+            db.ref("/DB01_HHC/Table_ChatLog/"+ cvRoomId).limitToLast(50).on('value',function(snapshot){
                 vm.myAllChatLog = snapshot.val();
             })
 

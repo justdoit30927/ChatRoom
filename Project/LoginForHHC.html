@@ -67,7 +67,7 @@
             InsertUserData(
             //導頁去大廳
             function(unique_Id){
-                window.location.href = "./Hall.html?id=" + unique_Id ;
+                window.location.href = "./HallForHHC.html?id=" + unique_Id ;
             });
             
         }
@@ -80,9 +80,9 @@
             //建立連線
             var db = firebase.database();
             //取得unique id
-            var myGetNewNode = db.ref("/DB01/Table_User").push();
+            var myGetNewNode = db.ref("/DB01_HHC/Table_User").push();
             var myId =myGetNewNode.key; 
-            db.ref("/DB01/Table_User/" + myId).set({
+            db.ref("/DB01_HHC/Table_User/" + myId).set({
                 User_Name:myUserName,
                 User_Id:myId,
                 User_Character:myCharacter

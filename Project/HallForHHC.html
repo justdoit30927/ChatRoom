@@ -73,7 +73,7 @@
                         var myInputPassword = $("#CheckChatRoomPassword").val();//輸入的密碼
                         var myRoomPassword = this.theRoomPassword;//聊天室的密碼
                         if(myInputPassword == myRoomPassword){
-                            window.location.href = "./ChatRoom.html?Id="+cvUserId + "&RoomId=" + this.theRoomId;
+                            window.location.href = "./ChatRoomForHHC.html?Id="+cvUserId + "&RoomId=" + this.theRoomId;
                         }
                         else{
                             alert("請輸入正確密碼");
@@ -89,7 +89,7 @@
 
                         //建立連線
                         var db= firebase.database();
-                        db.ref("/DB01/Table_ChatRoom").push({
+                        db.ref("/DB01_HHC/Table_ChatRoom").push({
                             Room_Name:myChatRoomName,
                             Room_Password:myChatRoomPassword,
                             Room_BuildTime:myDateFormat,
@@ -103,7 +103,7 @@
                             this.OpenCheckPasswordPopup(Room_Password,Room_Id);
                             return false;
                         }
-                        window.location.href = "./ChatRoom.html?Id="+cvUserId + "&RoomId=" + Room_Id;
+                        window.location.href = "./ChatRoomForHHC.html?Id="+cvUserId + "&RoomId=" + Room_Id;
                     },
                     //創建聊天室時，是否設定密碼
                     SetPassword:function(){
@@ -128,13 +128,13 @@
 
             //取得使用者資料，要傳送到下一頁
             var db = firebase.database();
-            db.ref("/DB01/Table_User/"+ cvKey).once('value').then(function(snapshot){
+            db.ref("/DB01_HHC/Table_User/"+ cvKey).once('value').then(function(snapshot){
                 cvUserName = snapshot.val().User_Name;
                 cvUserId = snapshot.val().User_Id;
             })
 
             //DB取 存在的聊天室
-            db.ref("/DB01/Table_ChatRoom").on('value',function(snapshot){
+            db.ref("/DB01_HHC/Table_ChatRoom").on('value',function(snapshot){
                 app.chatRooms = snapshot.val();
                 /*
                 var dataArr = [];

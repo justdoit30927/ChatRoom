@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登入畫面</title>
+    <script src="./JS/jquery-3.4.1.js"></script>
+    <script src="./JS/vue.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/firebasejs/6.5.0/firebase.js"></script>
+    <!--寫firebase的設定，注意要寫在firebase api宣告的後面-->
+    <script src="./JS/firebase.js"></script>
+    <link rel=stylesheet type="text/css" href="./Login.css">
+    <link rel=stylesheet type="text/css" href="./fontawesome/css/all.css">
+
+    <script>
+        $(document).ready(function(){
+            //碰到頭像，會出現可選擇的選項
+            $(".divLogin-chooseIcon").hover(function(){
+                $(".divLogin-allIcon").css("display","inline-block");
+            })
+            //點空白處 [頭像的選項] 會消失
+            $(document).click(function(event){
+                var container = $(".divLogin-chooseIcon");
+                var container2 = $(".divLogin-allIcon");
+                var container3 = $("#LoginButton");
+                if(!container.is(event.target)&&container.has(event.target).length==0
+                    &&!container2.is(event.target)&&container2.has(event.target).length==0){
+                    $(".divLogin-allIcon").css("display","none");
+                    //如果按下註冊卻發現沒有頭像就需要開啟
+                    if((container3.is(event.target)||container3.has(event.target).length!=0) && ($(".divLogin-chooseIcon").attr("Name")=="")){
+                        $(".divLogin-allIcon").css("display","inline-block");
+                    }
+                }
+            })
+            //選擇頭像 -> 替換掉
+            $(".divLogin-Icon").click(function(){
+                var mySrc = $(this).attr("src");
+                var myName = $(this).attr("name");
+
+                $(".divLogin-chooseIcon").attr("src",mySrc);
+                $(".divLogin-chooseIcon").attr("name",myName);
+                $(".divLogin-allIcon").css("display","none");
+            })            
+        })
+        //關閉選擇頭像的視窗
+        function closeAllIcon(){
+            $(".divLogin-allIcon").css("display","none");
+        }
+
+        //前去大廳
+        function GoToHall(){
+            /*檢查輸入*/
+            var myUserName = $("#UserName").val();
+            if(myUserName == ""){
+                alert("請輸入使用者名稱");
+                return false;
+            }
+            else if(myUserName.length>10){
+                alert("使用者名稱不得多於15個字");
+                return false;
+            }
+            else if($(".divLogin-chooseIcon").attr("Name")==""){
+                alert("請選擇頭像");
+                return false;
+            }
+            //變更按鈕
+            $("#LoginButton").text("註冊中...");
+            $("#LoginButton").attr("onclick","");
+            InsertUserData(
+            //導頁去大廳
+            function(unique_Id){
+                window.location.href = "./Hall.html?id=" + unique_Id ;
+            });
+            
+        }
+
+        //新增使用者進入db
+        function InsertUserData(callback){
+            var myUserName = $("#UserName").val();//使用者的名稱
+            var myCharacter = $(".divLogin-chooseIcon").attr("Name");//選擇的頭像
+
+            //建立連線
+            var db = firebase.database();
+            //取得unique id
+            var myGetNewNode = db.ref("/Table_User").push();
+            var myId =myGetNewNode.key; 
+            db.ref("/Table_User/" + myId).set({
+                User_Name:myUserName,
+                User_Id:myId,
+                User_Character:myCharacter
+            }).then(function(){
+                callback(myId);
+            }).catch(function(){
+                alert("伺服器發生錯誤，請稍後再試");
+                $("#LoginButton").attr("onclick","GoToHall()");
+            })
+        }        
+    </script>
+
+</head>
+<body>
+    <div id="divPosition">
+        <div id="divLogo">
+            <img src="./Img/logo.png">
+        </div>
+        <div id="divLogin">
+            <div class="divLogin-inviteText">You are invited to a chat room</div>
+            <div class="divLogin-title">Auroro Hunters</div>
+            <div class="divLogin-character">
+                <!--已選頭像-->
+                <img class="divLogin-chooseIcon" name="">
+                
+                <div class="divLogin-allIcon">
+                    <!--關閉popup-->
+                    <div id="divLogin-allIcon-cancel" class="fas fa-times-circle fa" onclick="closeAllIcon()"></div>
+                    <!--可選頭像-->
+                    <img name="Avatar1" src="./Img/Avatar1.svg" class="divLogin-Icon">
+                    <img name="Avatar2" src="./Img/Avatar2.svg" class="divLogin-Icon">
+                    <img name="Avatar3" src="./Img/Avatar3.svg" class="divLogin-Icon">
+                    <img name="Avatar4" src="./Img/Avatar4.svg" class="divLogin-Icon">
+                    <img name="Avatar5" src="./Img/Avatar5.svg" class="divLogin-Icon">
+                </div>
+            </div>
+            <div>
+                <div>How To Call You?</div>
+                <div><input id="UserName" type="text" placeholder="  請輸入"/></div>
+                <div id="LoginButton" onclick="GoToHall()">Let's Chat</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

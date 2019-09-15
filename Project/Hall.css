@@ -1,0 +1,131 @@
+html{
+    height : 100%;
+    color:#DBDBDB;
+}
+
+body{
+    height : 100%;
+    background-image: url("./Img/loginBackground.png");
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+    text-align: center;
+    margin: 0px;
+}
+/*  為了讓登入視窗可以置中  */
+body::before{
+    content:'';
+    height:100%;
+    vertical-align:middle;
+    display: inline-block;
+}
+
+/**滾輪樣式**/
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: white;
+    border: 3px solid #646464;
+    border-radius: 100px;
+}
+::-webkit-scrollbar-track {
+    background: #646464;
+    border: 3px solid #646464;
+    border-radius: 100px;
+}
+/*表格設定*/
+table {
+    border-collapse: collapse;     
+    width: 100%;
+}
+table tr td {
+    border: 2px solid #AFDDF8;
+    padding: 5px;
+}
+
+/*******************************  功能視窗   ********************************************************/
+/*功能視窗*/
+#divPosition{
+    position: relative;
+    display: inline-block;
+    width:500px;
+    height: 400px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+/*******************************  創建聊天室   ********************************************************/
+#divCreateChatRoomButton{
+    display: inline-block;
+    width:200px;
+    height: 50px;
+    font-size:30px;
+    line-height: 50px;
+    margin-bottom:50px;
+    background-color: #646464;
+    border-radius: 10px;
+    border:#DEDEDE 2px solid;
+    cursor: pointer;
+}
+
+#divCreateChatRoomButton:hover{
+    background-color:#1D1D1D;
+}
+/*按創建聊天室  開啟的popup*/
+#divPopup{
+    position: absolute;
+    top:100px;
+    left:50px;
+    width:400px;
+    height: 200px;
+    background:#353434;
+    border:#DEDEDE 2px solid;
+    border-radius: 30px;
+    text-align: right;
+    font-size:20px;
+    font-weight:bold;
+}
+
+/* 可選角色的視窗的叉叉  */
+.divPopup-cancelImg{
+    position: absolute;
+    top:-5px;
+    right:-5px;
+    background-color:black;
+    border-radius: 50%;
+}
+
+#divPopup div{
+    padding:30px 40px 0px 0px;
+}
+
+#divPopup input{
+    width:60%;
+    height:25px;
+}
+/*確認按鈕*/
+.divPopup-confirm span{
+    cursor: pointer;
+}
+.divPopup-confirm span:hover{
+    color:#817d7d;
+}
+
+/**************************************** Login 視窗 **********************************/
+.hidden{
+    display:none;
+}
+
+#divChatRoomList{
+    width:100%;
+    height:80%;
+    background-color:#1D1D1D;
+    border:#DEDEDE 2px solid;
+    overflow-y:auto;
+}
+
+.divChatRoomList-Content:hover{
+    background-color:black;
+}
+

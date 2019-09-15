@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>大廳</title>
+    <script src="./JS/jquery-3.4.1.js"></script>
+    <script src="./JS/jquery.colorbox.js"></script>
+    <script src="./JS/vue.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/firebasejs/6.5.0/firebase.js"></script>
+    <script src="./JS/firebase.js"></script>
+    <link rel=stylesheet type="text/css" href="./Hall.css">
+    <link rel=stylesheet type="text/css" href="./CSS/colorbox.css">
+    <link rel=stylesheet type="text/css" href="./fontawesome/css/all.css">
+    <script>
+         //從網址得到使用者的key
+         var cvKey = location.href.split('?')[1].split('=')[1];
+         //使用者資料
+         var cvUserId ="";
+         var cvUserName ="";
+
+        $(document).ready(function(){
+            var app = new Vue({
+                el:"#divPosition",
+                data:{
+                    setPassword:false,
+                    showCreatePopup:false,
+                    showCheckPasswordPopup:false,
+                    theRoomPassword:"",
+                    theRoomId:"",
+                    chatRooms:[],
+                },
+                methods:{
+                    //初始化[新建聊天室]的輸入框，因為之前可能有輸入過了
+                    InitCreatePopup:function(){
+                        $("#ChatRoomName").val("");
+                        $("#ChatRoomPassword").val("");
+                        this.setPassword = false;
+                    },
+                    
+                    //開啟[新建聊天室]的彈跳視窗
+                    OpenCreatePopup:function(){
+                        this.InitCreatePopup();
+                        this.showCreatePopup = true;
+                    },
+                    //關閉[新建聊天室]的彈跳視窗
+                    CloseCreatePopup:function(){
+                        this.showCreatePopup = false;
+                    },
+                    //確認 [新建聊天室]
+                    CreateChatRoomConfirm:function(){
+                        this.CreateNewChatRoom();
+                        this.CloseCreatePopup();
+                    },
+
+                    //初始化[確認密碼]的輸入框，因為之前可能有輸入過了
+                    InitCheckPasswordPopup:function(){
+                        $("#CheckChatRoomPassword").val("");
+                        this.theRoomPassword = "";
+                        this.theRoomId ="";
+                    },
+                    //開啟[確認密碼]的彈跳視窗
+                    OpenCheckPasswordPopup:function(Room_Password,Room_Id){
+                        this.InitCheckPasswordPopup();
+                        this.theRoomPassword = Room_Password;
+                        this.theRoomId = Room_Id;
+                        this.showCheckPasswordPopup = true;
+                    },
+                    //關閉[確認密碼]的彈跳視窗
+                    CloseCheckPasswordPopup:function(){
+                        this.showCheckPasswordPopup = false;
+                    },
+                    //確認 [確認密碼]
+                    CheckChatRoomPassworConfirm:function(){
+                        var myInputPassword = $("#CheckChatRoomPassword").val();//輸入的密碼
+                        var myRoomPassword = this.theRoomPassword;//聊天室的密碼
+                        if(myInputPassword == myRoomPassword){
+                            window.location.href = "./ChatRoom.html?Id="+cvUserId + "&RoomId=" + this.theRoomId;
+                        }
+                        else{
+                            alert("請輸入正確密碼");
+                        }
+                    },
+
+                    //DB建立房間
+                    CreateNewChatRoom :function(){
+                        var myChatRoomName =$("#ChatRoomName").val();
+                        var myChatRoomPassword =$("#ChatRoomPassword").val();
+                        var myDate = new Date();
+                        var myDateFormat = myDate.getFullYear() + "/" + myDate.getMonth()+ "/" + myDate.getDate()+ " " + myDate.getHours() + ":" + myDate.getMinutes() + ":" + myDate.getSeconds();
+
+                        //建立連線
+                        var db= firebase.database();
+                        db.ref("/Table_ChatRoom").push({
+                            Room_Name:myChatRoomName,
+                            Room_Password:myChatRoomPassword,
+                            Room_BuildTime:myDateFormat,
+                            Room_Builder:cvUserName
+                        })
+                    },
+                    //選擇進入的聊天室
+                    EntryChatRoom:function(Room_Password,Room_Id){
+                        //如果聊天室有設定密碼，開啟輸入密碼的彈跳視窗
+                        if(Room_Password !=""){
+                            this.OpenCheckPasswordPopup(Room_Password,Room_Id);
+                            return false;
+                        }
+                        window.location.href = "./ChatRoom.html?Id="+cvUserId + "&RoomId=" + Room_Id;
+                    },
+                    //創建聊天室時，是否設定密碼
+                    SetPassword:function(){
+                        this.setPassword = true;
+                    }
+                },
+                updated(){
+                    //拉到最下方
+                    var myScrollHeight = $("#divChatRoomList")[0].scrollHeight;
+                    $("#divChatRoomList").scrollTop(myScrollHeight);
+                }
+                /*mounted(){
+                    var db = firebase.database();
+                    db.ref("/Table_ChatRoom").on('value',function(snapshot){
+                        snapshot.forEach(function (item) {
+                            console.log(item.key + " " + item.val());
+                        })
+                    })
+                }*/
+            })
+
+
+            //取得使用者資料，要傳送到下一頁
+            var db = firebase.database();
+            db.ref("/Table_User/"+ cvKey).once('value').then(function(snapshot){
+                cvUserName = snapshot.val().User_Name;
+                cvUserId = snapshot.val().User_Id;
+            })
+
+            //DB取 存在的聊天室
+            db.ref("/Table_ChatRoom").on('value',function(snapshot){
+                app.chatRooms = snapshot.val();
+                /*
+                var dataArr = [];
+                snapshot.forEach(function (item) {
+                    dataArr.push(item.val());
+                })
+                
+
+                app.chatRooms = dataArr.reverse();*/
+            })
+        })
+    </script>
+
+</head>
+<body>
+    <div id="divPosition">
+        <div id="divCreateChatRoomButton" @click="OpenCreatePopup">新建聊天室</div>
+        <br/>
+        <h2>聊天室</h2>
+        <div id="divChatRoomList">
+            <table>
+                <tr class="divChatRoomList-Title">
+                    <td width="10%">編號</td>
+                    <td width="50%">聊天室名稱</td>
+                    <td width="20%">創建人</td>
+                    <td width="20%">創建時間</td>
+                </tr>
+                <tr class="divChatRoomList-Content" v-for="(chatRoom,key,index) in chatRooms" @click="EntryChatRoom(chatRoom.Room_Password,key)">
+                    <td>{{index+1}}</td>
+                    <td>{{chatRoom.Room_Name}}</td>
+                    <td>{{chatRoom.Room_Builder}}</td>
+                    <td>{{chatRoom.Room_BuildTime}}</td>                    
+                    <td class="hidden">{{chatRoom.Room_Password}}</td>
+                    <td class="hidden">{{key}}</td>                    
+                </tr>
+            </table>
+        </div>
+        <!--新建聊天室-->
+        <div id="divPopup" v-show="showCreatePopup">
+            <!--關閉popup-->
+            <span  class="fas fa-times-circle fa divPopup-cancelImg" @click="CloseCreatePopup"></span>
+            <div>
+                房間名稱：<input id="ChatRoomName" type="text" placeholder=" 請輸入"/>
+            </div>
+            <div v-show="setPassword">
+                密碼：<input id="ChatRoomPassword" type="text" placeholder=" 請輸入"/>
+            </div>
+            <div class="divPopup-confirm">
+                <span @click="SetPassword">設定密碼</span>
+                <span @click="CreateChatRoomConfirm">確認</span>
+            </div>
+        </div>
+
+        <!--確認密碼-->
+        <div id="divPopup" v-show="showCheckPasswordPopup">
+            <!--關閉popup-->
+            <span class="fas fa-times-circle fa divPopup-cancelImg" @click="CloseCheckPasswordPopup"></span>
+            <div>
+                輸入密碼：<input id="CheckChatRoomPassword" type="text" placeholder=" 請輸入"/>
+            </div>
+            <div class="divPopup-confirm">
+                <span @click="CheckChatRoomPassworConfirm">確認</span>
+            </div>
+        </div>
+    </div>
+    <!--輸入密碼的彈跳視窗
+    <div id="PasswordCheckPopup"></div>-->
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>一對一聊天室</title>
+    <script src="./JS/jquery-3.4.1.js"></script>
+    <script src="./JS/vue.js"></script>
+    <link rel=stylesheet type="text/css" href="./fontawesome/css/all.css">
+    <script type="text/javascript" src="https://www.gstatic.com/firebasejs/6.5.0/firebase.js"></script>
+    <!--寫firebase的設定，注意要寫在firebase api宣告的後面-->
+    <script src="./JS/firebase.js"></script>
+    <!--表情符號-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link href="./Emoji/lib/css/emoji.css" rel="stylesheet">
+    <script src="./Emoji/lib/js/config.js"></script>
+    <script src="./Emoji/lib/js/util.js"></script>
+    <script src="./Emoji/lib/js/jquery.emojiarea.js"></script>
+    <script src="./Emoji/lib/js/emoji-picker.js"></script>
+
+
+    
+    <link rel=stylesheet type="text/css" href="./ChatRoom.css">
+    
+    <script>
+        //從網址得到使用者的key
+        var cvPare = location.href.split('?')[1];
+        //使用者ID
+        var cvUserId = cvPare.split("&")[0].split('=')[1];
+        //聊天室ID
+        var cvRoomId = cvPare.split("&")[1].split('=')[1];
+
+
+        $(document).ready(function(){
+            //創建資料庫連線
+            var db = firebase.database();
+
+            //把輸入框變成能輸入表情符號
+            window.emojiPicker = new EmojiPicker({
+            emojiable_selector: '[data-emojiable=true]',
+            assetsPath: '../lib/img/',
+            popupButtonClasses: 'fa fa-smile-o'
+            });
+            window.emojiPicker.discover();
+
+
+            var vm = new Vue({
+                el:"#Vue_ChatContent_Log",
+                data:{
+                    myInput:"",
+                    myAllChatLog:[],
+                    myChatContent_Log_Every:false,
+                },
+                methods:{
+                    submitText:function(){
+                        if(this.myInput!=""){
+                            db.ref("/Table_ChatLog/" + cvRoomId).push({
+                                UserId:cvUserId,
+                                UserName:vm3.myUserName,
+                                UserChar:vm3.myUserChar,
+                                UserSpeak:this.myInput                            
+                            }).then(function(){
+                                //清空輸入框
+                                $(".emoji-wysiwyg-editor").text("");
+                                this.myInput = "";
+                                //為了能連續輸入
+                                $(".emoji-wysiwyg-editor").focus();
+                            })
+                        }
+                    },
+                    CheckMyChatContentLogEvery:function(Input_Name){
+                        if(Input_Name == cvUserId){
+                            return true;
+                        }
+                        else{
+                            return false;
+                        }
+                    }
+                },
+                //在這裡做是因為要等到所有的資料都綁定後才能知道，實際視窗多高
+                //終於知道updated的生命週期有甚麼用了
+                updated(){
+                    //拉到最下方
+                    var myScrollHeight = $('#Vue_ChatContent_Log')[0].scrollHeight;
+                    $("#Vue_ChatContent_Log").scrollTop(myScrollHeight);
+                }
+            })
+
+            var vm2 = new Vue({
+                el:"#Vue_File_Input",
+                data:{
+                },
+                methods:{
+                    submitText:function(){
+                        //我知道這段看起來超怪，為什麼不把 #emoji_Input，也包在vue裡面就好
+                        //因為如果 #emoji_Input 包在vue裡面，就沒辦法在#emoji_Input取得值，好像是emoji插鍵的問題
+                        //把斜線/n變成<br/>才可以換行;
+                        //因為javascript的replace只會替換第一個，所以這裡要用正則表達式替換
+                        vm.myInput = $("#emoji_Input").val().replace(/\n/g,"<br/>");
+                        vm.submitText();
+
+                    }
+                },
+            })
+
+            var vm3 = new Vue({
+                el:"#Vue_divChatGuest",
+                data:{
+                    myUserName:"",
+                    myUserChar:"",
+                },
+                methods:{
+                    backToHall:function(){
+                        window.location.href= "./Hall.html?id=" + cvUserId;
+                    }
+                }
+            })
+
+            //找User資料
+            db.ref("/Table_User/"+ cvUserId).once('value',function(snapshot){
+                vm3.myUserName = snapshot.val().User_Name;
+                vm3.myUserChar = "./Img/" + snapshot.val().User_Character + ".svg";
+            })
+
+            //找出最新的100筆
+            db.ref("/Table_ChatLog/"+ cvRoomId).limitToLast(10).on('value',function(snapshot){
+                vm.myAllChatLog = snapshot.val();
+            })
+
+            //找出全部的
+            /*db.ref("/Table_ChatLog/"+ cvRoomId).limitToLast(1).on('value',function(snapshot){
+                var myValue = snapshot.val();
+                
+                var testkey = Object.keys(myValue).map(function(item){
+                    return item;
+                });
+                var test = Object.values(myValue).map(function(item){
+                    return item;
+                });
+
+                var testobj = new Object();
+                Object.values(myValue).forEach(function(item){
+                    testobj["UserChar"] = item.UserChar,
+                    testobj["UserId"] = item.UserId,
+                    testobj["UserName"] = item.UserName,
+                    testobj["UserSpeak"] = item.UserSpeak
+                })
+
+
+                vm.myAllChatLog[testkey] = testobj;
+                //vm.myAllChatLog.push(myValue);
+            })*/
+
+
+            //處理shift + entry 換行.emoji-wysiwyg-editor
+            $('#divChatContent_Input').on('keydown', '#content_Input', function (e)
+            {
+                //shift + entry 不傳送，換行就好
+                if(e.shiftKey === true && e.keyCode === 13){
+                   // var myValue = $("#emoji_Input").val();
+                    //$("#emoji_Input").val(myValue + "<br/>");
+                }
+                //entry 點擊發送鍵
+                else if(e.keyCode === 13){
+                    //在輸入框沒有焦點的時候才會在隱藏的輸入框塞值
+                    //這套件原本的問題
+                    $(".emoji-wysiwyg-editor").blur();
+                    $("#submit").click();
+                }
+            });
+            
+        })
+        function todo(){
+            alert("我受不了放假還要自發性的無薪勞動，此功能以後再說");
+        }
+    </script>
+    
+</head>
+<body>
+    <div>
+        <div id="divHead">
+            <img class="Head-Logo" src="./Img/logo.svg"/>
+            <img class="Head-Search" src="./Img/search.svg" onClick="todo()"/>
+        </div>
+
+        <div id="divBody">
+            <!--使用者 -->
+            <div id="Vue_divChatGuest">
+                <!--離開 -->
+                <div id="divExitSection">
+                    Aurora Hunters 
+                    <img src="./Img/exit.svg" @click="backToHall()">
+                </div>
+                <!--自己 -->
+                <div id="divMySection">
+                    <div class="User">
+                        <img class="User-Pic" v-bind:src="myUserChar"/>
+                        <div class="User-Name">{{myUserName}}</div>
+                        <div class="User-Light"></div>
+                    </div>                    
+                </div>
+            </div>
+            <!--聊天室窗 -->
+            <div id="divChatContent">
+                <!--聊天室歷史訊息 -->
+                <div id="Vue_ChatContent_Log">
+                    <div class="ChatContent_Log_Every" v-for="item in myAllChatLog" :class="{'myChatContent_Log_Every':CheckMyChatContentLogEvery(item.UserId)}">
+                        <div>
+                            <img class="User-Pic" v-bind:src="item.UserChar"/>
+                        </div>                        
+                        <div class="ChatContent_Log_sentence">
+                            <div>{{item.UserName}}</div>
+                            <div v-html="item.UserSpeak"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--輸入條 -->
+                <div id="divChatContent_Input">
+                    <!--輸入框 -->
+                    <div id="content_Input">
+                        <!--為了修改emoji插鍵 產生的dom元素 要修改的style只能寫在class中，才會套用過去-->
+                        <textarea id="emoji_Input" class="emoji_Input" type="text"  placeholder="輸入訊息，笑臉可以選擇表情符號" data-emojiable="true"></textarea></textarea>
+                    </div>
+                    <!--發送文字、發送圖片、發送檔案 -->
+                    <div id="Vue_File_Input">
+                        <div id="submit" class="fas fa-caret-right fa-2x" @click="submitText"></div>
+                        <img class="input_box_item" src="./Img/image_file.svg" onClick="todo()"/>
+                        <img class="input_box_item" src="./Img/file.svg" onClick="todo()"/>                        
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+</body>
+</html>

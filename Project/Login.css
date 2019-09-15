@@ -1,0 +1,107 @@
+html{
+    height : 100%;
+    color:#DBDBDB;
+}
+
+body{
+    height : 100%;
+    background-image: url("./Img/loginBackground.png");
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+    text-align: center;
+    margin: 0px;
+}
+/*  為了讓登入視窗可以置中  */
+body::before{
+    content:'';
+    height:100%;
+    vertical-align:middle;
+    display: inline-block;
+}
+
+/*******************************  登入視窗   ********************************************************/
+/*Logo+ Login定位*/
+#divPosition{
+    display: inline-block;
+    width:500px;
+    height: 400px;
+    vertical-align: middle;
+}
+/**************************************** Logo    **********************************/
+#divLogo{
+    height:15%;
+    margin-bottom: 50px;
+}
+#divLogo img{
+    height:100%;
+}
+/**************************************** Login 視窗 **********************************/
+#divLogin{
+    width:100%;
+    height:80%;
+    background-color:#1D1D1D;
+    border:#DEDEDE 2px solid;
+}
+/*邀請文字*/
+.divLogin-inviteText{
+    margin:20px;
+    color:#66EAD5;
+    font-size:10px;
+}
+/*Auroro Hunters*/
+.divLogin-title{
+    margin:20px;
+    font-size:30px;
+}
+/*選擇角色 */
+.divLogin-character{
+    position: relative;
+    margin:20px;
+}
+.divLogin-character img{
+    cursor: pointer;
+    background-color: #DEDEDE;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+}
+/* 可選角色的視窗  */
+.divLogin-allIcon{
+    position: absolute;
+    display:none;
+    background-color:#D6D6D6;
+    width:250px;
+    border-radius: 30px;
+}
+/* 可選角色的視窗的叉叉  */
+#divLogin-allIcon-cancel{
+    color:#66EAD5;
+    position: absolute;
+    top:-5px;
+    right:0px;
+    background-color:black;
+    border-radius: 50%
+}
+/* 綽號  輸入框  */
+#divLogin  input{
+    box-sizing: border-box;
+    width:300px;
+    height:30px;
+    margin:10px;
+}
+
+/*****************************************   登入按鈕  *****************************************/
+#LoginButton{
+    display: inline-block;
+    line-height:25px;
+    width:300px;
+    height:30px;
+    background-color: #66EAD5;
+    color:black;
+    cursor: pointer;
+}
+#LoginButton:hover{
+    background-color: rgb(78, 204, 183);
+}
+
+

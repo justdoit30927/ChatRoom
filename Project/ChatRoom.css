@@ -1,0 +1,198 @@
+html{
+    height : 100%;
+    color:#DBDBDB;
+}
+
+body{
+    height : 100%;
+    margin: 0px;
+}
+body >div{
+    height : 100%;
+}
+
+/************************   抬頭  *****************************/
+#divHead
+{
+    box-sizing: border-box;
+    position: relative;
+    min-width: 1200px;
+    height: 10%;
+    background: #171717;
+    margin: 0px;
+    padding:10px;
+}
+/** Let's chat 標誌 */
+#divHead .Head-Logo{
+    height:100%;
+    margin-left:20px; 
+}
+/** 搜尋 **/
+#divHead .Head-Search{
+    position: absolute;
+    height:20px;
+    top:20px;
+    right:50px;
+}
+
+/************************   聊天功能  Start*****************************/
+#divBody{
+    min-width: 1200px;
+    height:90%;
+}
+
+/** 聊天室訪客 **/
+#Vue_divChatGuest{
+    box-sizing: border-box;
+    width:20%;
+    height:100%;
+    background-color: #272727;
+    float: left;
+}
+/*** 離開  ***/
+#divExitSection{
+    box-sizing: border-box;
+    padding:20px;
+    height: 15%;
+    font: Bold 24px/32px Roboto Slab;
+    letter-spacing: 0;
+}
+#divExitSection img{
+    float:right;
+    right:10px;
+}
+/*** 自己  ***/
+#divMySection{
+    box-sizing: border-box;
+    border-bottom: #DEDEDE 2px solid;
+}
+#divMySection::before{
+    content:'';
+    height:100%;
+    vertical-align:middle;
+    display: inline-block;
+}
+.User-Pic{
+    height: 30px;
+    margin: 0px 10px;
+    vertical-align:middle;
+}
+.User-Name{
+    display:inline-block;
+    width:60%;
+    font-size: 20px;
+    vertical-align:middle;
+}
+.User-Light{
+    display:inline-block;
+    width:10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color:#98D693;
+    vertical-align:middle;
+}
+
+.User{
+    margin: 10px;
+}
+
+
+/*聊天訊息*/
+#divChatContent{
+    width:80%;
+    height:100%;
+    background-color: #1D1D1D;
+    float: left;
+}
+
+#Vue_ChatContent_Log{
+    height:90%;
+    overflow: auto;
+    padding:50px;
+    box-sizing: border-box;
+}
+
+.ChatContent_Log_Every{
+    padding:10px 0px;
+}
+
+.myChatContent_Log_Every{
+    text-align: right;
+}
+
+.ChatContent_Log_Every >div{
+    display: inline-block;
+    vertical-align: top;
+    word-wrap:break-word;
+}
+
+.myChatContent_Log_Every >div{
+    text-align: left;
+}
+
+
+.ChatContent_Log_sentence{
+    max-width:40%;
+}
+
+.UserName{
+    width:200px;
+}
+
+#divChatContent_Input{
+    background-color:#403F3F;
+    min-width: 700px;
+    height:10%;
+    font-size: 0px;
+}
+
+#content_Input{
+    position: relative;
+    display: inline-block;
+    width:60%;
+    height:100%;
+    font-size: 20px;
+}
+
+.emoji_Input{
+    box-sizing: border-box;
+    height:100%;
+}
+/*出入框不要有 scrollbar*/
+.emoji_Input::-webkit-scrollbar{
+    display:none;
+}
+
+/*在emoji.css內在有scrollbar的情況下，會把笑臉移位，自己用css讓他不移位*/
+.parent-has-scroll{
+    top:5px;
+    right:10px;
+}
+/*在emoji.css內的圖示框會長在下方，自己用css移動到上方*/
+.emoji-menu{
+    bottom: 50px;
+}
+
+#Vue_File_Input{
+    display: inline-block;
+    width:200px;
+    margin-left:50px;
+    overflow: hidden;
+}
+/**/
+.input_box_item{
+    box-sizing: border-box;
+    padding:10px;
+}
+#submit{
+    cursor: pointer;
+    box-sizing: border-box;
+    padding:5px;
+    height: 100%;
+    float: left;
+    font-size: 40px;
+}
+#submit:hover{
+    color:black;
+}
+/************************   聊天功能  End*****************************/
